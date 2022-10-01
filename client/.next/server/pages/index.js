@@ -643,7 +643,7 @@ module.exports = require("react/jsx-dev-runtime");
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"private":true,"description":"An example project for NextAuth.js with Next.js","repository":"https://github.com/nextauthjs/next-auth-example.git","bugs":{"url":"https://github.com/nextauthjs/next-auth/issues"},"homepage":"https://next-auth-example.vercel.app","scripts":{"dev":"next","build":"next build","start":"next start"},"author":"Iain Collins <me@iaincollins.com>","contributors":["Balázs Orbán <info@balazsorban.com>","Nico Domino <yo@ndo.dev>","Lluis Agusti <hi@llu.lu>"],"dependencies":{"next":"latest","next-auth":"latest","nodemailer":"^6","react":"^18.2.0","react-dom":"^18.2.0"},"devDependencies":{"@types/node":"^17","@types/react":"^18.0.15","typescript":"^4"}}');
+module.exports = JSON.parse('{"private":true,"description":"An example project for NextAuth.js with Next.js","repository":"https://github.com/nextauthjs/next-auth-example.git","bugs":{"url":"https://github.com/nextauthjs/next-auth/issues"},"homepage":"https://next-auth-example.vercel.app","scripts":{"dev":"next","build":"next build","start":"next start"},"author":"Iain Collins <me@iaincollins.com>","contributors":["Balázs Orbán <info@balazsorban.com>","Nico Domino <yo@ndo.dev>","Lluis Agusti <hi@llu.lu>"],"dependencies":{"@apollo/client":"^3.7.0","@next-auth/mongodb-adapter":"^1.1.0","graphql":"^16.6.0","mongodb":"^4.10.0","next":"latest","next-auth":"^4.12.2","nodemailer":"^6","react":"^18.2.0","react-dom":"^18.2.0"},"devDependencies":{"@types/node":"^17","@types/react":"^18.0.15","typescript":"^4"}}');
 
 /***/ })
 

@@ -1,76 +1,57 @@
-import { Express, NextFunction, Request, Response } from 'express';
-import express from 'express';
-import dotenv from 'dotenv';
-import { Schema, model, connect } from 'mongoose';
-import cors from 'cors';
-import passport from 'passport';
+import 'dotenv/config';
 import path from 'path';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
-import { connectDB } from './config/db';
-import authRouter from './routes/auth.route';
+import express, { Request, Response } from 'express';
+import { ApolloServer } from 'apollo-server-express';
+import { db } from './database';
+import typeDefs from './graphql/schema';
+import resolvers from './graphql/resolvers';
+import { middleware } from './config/middleware';
 
-dotenv.config();
+const { PORT, NODE_ENV, DEV_ORIGIN, PROD_ORIGIN } = process.env;
 
-// Connect DB
-connectDB();
+const app: express.Application = express();
+const port: string | number = PORT || 3000;
+const isDevelopment: boolean = NODE_ENV === 'development';
+const staticDir: string = isDevelopment ? './dist' : '.';
+const origin: string = isDevelopment ? DEV_ORIGIN : PROD_ORIGIN;
 
-// Initialize app and port
-const app = express();
-const PORT = process.env.PORT || 5050;
-const MONGO_URI = process.env.MONGO_URI;
+interface CorsOpts {
+  origin: string;
+  credentials: boolean;
+}
 
-app.use(cors());
+const cors: CorsOpts = {
+  origin,
+  credentials: true,
+};
 
-// Sessions
-app.use(
-  session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: MONGO_URI }),
-  })
-);
+middleware(app);
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Set global var
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.locals.user = req.user || null;
-  next();
+app.get('*', (_req: Request, res: Response): void => {
+  res.sendFile('index.html', {
+    root: path.join(__dirname, staticDir),
+  });
 });
 
-// Static folder
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Routes
-app.use('/', authRouter);
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World');
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ req, res }): Promise<{ req: object; res: object }> => ({
+    req,
+    res,
+  }),
 });
 
-app.listen(PORT, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+const startServer = async (): Promise<void> => {
+  await server.start();
+  server.applyMiddleware({
+    app,
+    cors,
+    path: '/graphql',
+  });
+  app.listen(port, () => {
+    console.log(`Express server listeting on port ${port}`);
+  });
+};
 
-// Use Routes
-// app.use('/todo', toDoRoutes);
-
-// Server static assets if in production
-// if (process.env.NODE_ENV === 'production') {
-//   //Set static folder
-//   app.use(express.static('client/build'));
-
-//   app.get('*', (req, res) => {
-//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-//   });
-// }
+db.connect().then((): Promise<void> => startServer());

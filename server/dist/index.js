@@ -22,18 +22,21 @@ const cors = {
     credentials: true,
 };
 (0, middleware_1.middleware)(app);
-app.get('*', (_req, res) => {
-    res.sendFile('index.html', {
-        root: __dirname,
-    });
+app.get('', (_req, res) => {
+    res.send('hello world');
 });
 const server = new apollo_server_express_1.ApolloServer({
     typeDefs: schema_1.default,
     resolvers: resolvers_1.default,
-    context: async ({ req, res }) => ({
-        req,
-        res,
-    }),
+    csrfPrevention: true,
+    cache: 'bounded',
+    context: async ({ req, res }) => {
+        console.log(req);
+        return {
+            req,
+            res,
+        };
+    },
     plugins: [(0, apollo_server_core_1.ApolloServerPluginLandingPageGraphQLPlayground)()],
 });
 const startServer = async () => {

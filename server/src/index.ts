@@ -37,10 +37,11 @@ const server = new ApolloServer({
   resolvers,
   csrfPrevention: true,
   cache: 'bounded',
-  context: async ({ req, res }): Promise<{ req: object; res: object }> => ({
+  context: async ({ req, res }): Promise<{ req: object; res: object }> => {
+    return {
     req,
     res,
-  }),
+  }},
   plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 });
 

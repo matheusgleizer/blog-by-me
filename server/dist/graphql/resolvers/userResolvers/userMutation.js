@@ -19,28 +19,22 @@ const createUser = async (_, args, ctx) => {
     const { input: { displayName, firstName, lastName, email, password }, } = args;
     const date = new Date();
     const salt = bcryptjs_1.default.genSaltSync(10);
-    try {
-        const user = await user_1.default.create({
-            displayName,
-            firstName,
-            lastName,
-            date,
-            email,
-            password: bcryptjs_1.default.hashSync(password, salt),
-        });
-        const token = await jsonwebtoken_1.default.sign({ _id: user._id.toString(), email: user.email }, process.env.JWT_SECRET, {
-            expiresIn: '1d',
-        });
-        ctx.res.cookie(TOKEN_KEY, JSON.stringify(token), cookieOpts);
-        return {
-            user,
-            token,
-        };
-    }
-    catch (error) {
+    const user = await user_1.default.create({
+        displayName,
+        firstName,
+        lastName,
+        date,
+        email,
+        password: bcryptjs_1.default.hashSync(password, salt),
+    }).catch((error) => {
         console.log(error);
         throw new Error(error);
-    }
+    });
+    const token = jsonwebtoken_1.default.sign({ _id: user._id.toString(), email: user.email }, process.env.JWT_SECRET, {
+        expiresIn: '1d',
+    });
+    ctx.res.cookie(TOKEN_KEY, JSON.stringify(token), cookieOpts);
+    return user;
 };
 exports.createUser = createUser;
 const signInUser = async (_, args, ctx) => {

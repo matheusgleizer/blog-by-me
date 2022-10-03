@@ -22,12 +22,11 @@ const cors = {
     credentials: true,
 };
 (0, middleware_1.middleware)(app);
-// app.get('*', (_req: Request, res: Response): void => {
-//   console.log(__dirname, staticDir)
-//   res.sendFile('index.html', {
-//     root: __dirname,
-//   });
-// });
+app.get('*', (_req, res) => {
+    res.sendFile('index.html', {
+        root: __dirname,
+    });
+});
 const server = new apollo_server_express_1.ApolloServer({
     typeDefs: schema_1.default,
     resolvers: resolvers_1.default,
@@ -35,19 +34,22 @@ const server = new apollo_server_express_1.ApolloServer({
         req,
         res,
     }),
-    plugins: [
-        (0, apollo_server_core_1.ApolloServerPluginLandingPageGraphQLPlayground)(),
-    ],
+    plugins: [(0, apollo_server_core_1.ApolloServerPluginLandingPageGraphQLPlayground)()],
 });
 const startServer = async () => {
-    await server.start();
-    server.applyMiddleware({
-        app,
-        cors,
-        path: '/graphql',
-    });
-    app.listen(port, () => {
-        console.log(`Express server listening on port ${port}`);
-    });
+    try {
+        await server.start();
+        server.applyMiddleware({
+            app,
+            cors,
+            path: '/graphql',
+        });
+        app.listen(port, () => {
+            console.log(`Express server listening on port ${port}`);
+        });
+    }
+    catch (error) {
+        console.log(error);
+    }
 };
 database_1.db.connect().then(() => startServer());

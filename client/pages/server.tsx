@@ -34,15 +34,15 @@ export default function ServerSidePage({ session }: { session: Session }) {
   )
 }
 
-// Export the `session` prop to use sessions with Server Side Rendering
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  return {
-    props: {
-      session: await unstable_getServerSession(
-        context.req,
-        context.res,
-        authOptions
-      ),
-    },
-  }
-}
+// // Export the `session` prop to use sessions with Server Side Rendering
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
+//   return {
+//     props: {
+//       session: await unstable_getServerSession(
+//         context.req,
+//         context.res,
+//         authOptions
+//       ),
+//     },
+//   }
+// }

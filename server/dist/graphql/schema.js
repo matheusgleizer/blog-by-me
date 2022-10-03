@@ -4,10 +4,15 @@ const apollo_server_express_1 = require("apollo-server-express");
 const typeDefs = (0, apollo_server_express_1.gql) `
   scalar Date
   type User {
-    _id: String!
+    _id: String
+    displayName: String
+    firstName: String!
+    lastName: String!
+    image: String
+    googleId: String
+    createdAt: Date
     email: String
     password: String
-    cretedAt: Date
   }
   type IsAuthenticated {
     status: Int!
@@ -20,7 +25,14 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     token: String!
     email: String!
   }
-  input UserCredens {
+  input UserCredentials {
+    _id: String
+    displayName: String!
+    firstName: String!
+    lastName: String!
+    image: String
+    googleId: String
+    createdAt: Date
     email: String!
     password: String!
   }
@@ -35,8 +47,8 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     isAuthenticated: IsAuthenticated
   }
   type Mutation {
-    createUser(input: UserCredens): CreateAccountPayload!
-    signInUser(input: UserCredens): SignIn!
+    createUser(input: UserCredentials): User!
+    signInUser(input: UserCredentials): SignIn!
     signOutUser: SignOutUser!
   }
 `;

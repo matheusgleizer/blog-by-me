@@ -2,10 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const userSchema = new mongoose_1.Schema({
-    id: { type: String, required: true },
     googleId: {
         type: String,
-        required: true,
+        required: false,
     },
     displayName: {
         type: String,

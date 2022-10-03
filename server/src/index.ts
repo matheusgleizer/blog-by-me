@@ -28,35 +28,36 @@ const cors: CorsOpts = {
 
 middleware(app);
 
-// app.get('*', (_req: Request, res: Response): void => {
-//   console.log(__dirname, staticDir)
-//   res.sendFile('index.html', {
-//     root: __dirname,
-//   });
-// });
+app.get('', (_req: Request, res: Response): void => {
+  res.send('hello world');
+});
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  csrfPrevention: true,
+  cache: 'bounded',
   context: async ({ req, res }): Promise<{ req: object; res: object }> => ({
     req,
     res,
   }),
-  plugins: [
-    ApolloServerPluginLandingPageGraphQLPlayground(),
-  ],
+  plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
 });
 
 const startServer = async (): Promise<void> => {
-  await server.start();
-  server.applyMiddleware({
-    app,
-    cors,
-    path: '/graphql',
-  });
-  app.listen(port, () => {
-    console.log(`Express server listening on port ${port}`);
-  });
+  try {
+    await server.start();
+    server.applyMiddleware({
+      app,
+      cors,
+      path: '/graphql',
+    });
+    app.listen(port, () => {
+      console.log(`Express server listening on port ${port}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 db.connect().then((): Promise<void> => startServer());

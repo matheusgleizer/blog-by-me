@@ -1,8 +1,6 @@
-import { timeStamp } from 'console';
-import { ObjectId, Document, Model, Schema, model } from 'mongoose';
+import { ObjectId, Document, Schema, model } from 'mongoose';
 
 export interface IUser extends Document {
-  id: ObjectId;
   displayName: {
     type: string;
     required: true;
@@ -20,12 +18,15 @@ export interface IUser extends Document {
   };
   googleId: {
     type: string;
-    required: true;
+    required: false;
   };
   createdAt: {
     type: Date;
   };
-  email: string;
+  email: {
+    type: string;
+    unique: true;
+  };
   password: {
     type: string;
     min: 6;
@@ -37,10 +38,9 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
   {
-    id: { type: String, required: true },
     googleId: {
       type: String,
-      required: true,
+      required: false,
     },
     displayName: {
       type: String,

@@ -8,25 +8,25 @@ import {
   useQuery
 } from '@apollo/client';
 
-const client = new ApolloClient({
-  uri: 'https://flyby-gateway.herokuapp.com/',
+export const client = new ApolloClient({
+  uri: 'http://localhost:5050',
   cache: new InMemoryCache(),
 });
 
-client
-  .query({
-    query: gql`
-      query GetLocations {
-        locations {
-          id
-          name
-          description
-          photo
-        }
-      }
-    `,
-  })
-  .then((result) => console.log(result));
+// client
+//   .query({
+//     query: gql`
+//       query GetLocations {
+//         locations {
+//           id
+//           name
+//           description
+//           photo
+//         }
+//       }
+//     `,
+//   })
+//   .then((result) => console.log(result));
 
 import type { AppProps } from 'next/app';
 import type { Session } from 'next-auth';

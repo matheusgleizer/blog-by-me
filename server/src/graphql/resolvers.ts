@@ -41,9 +41,8 @@ const getStatus = (token: string, tokens: string[]): number => {
 const resolvers = {
   Query: {
     async getUserByEmail(_: any, args: any): Promise<object> {
-      const {
-        input: { email },
-      } = args;
+      const { input: { email } } = args;
+      console.log(email)
       return User.findOne({ email });
     },
     async isAuthenticated(_: any, _args: any, ctx: any): Promise<object> {
@@ -89,8 +88,8 @@ const resolvers = {
         return {
           token,
         };
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (error: any) {
+        throw new Error(error);
       }
     },
     signInUser: async (_: any, args: any, ctx: any): Promise<object> => {
@@ -99,7 +98,7 @@ const resolvers = {
       } = args;
 
       try {
-        const user = await User.findOne({
+        const user: any = await User.findOne({
           email,
         });
 
@@ -120,8 +119,8 @@ const resolvers = {
         return {
           isAuthenticated: isValidPassword,
         };
-      } catch (error) {
-        throw new Error(error.message);
+      } catch (error: any) {
+        throw new Error(error);
       }
     },
     signOutUser: async (_: any, _args: any, ctx: any): Promise<object> => {

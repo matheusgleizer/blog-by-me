@@ -6,13 +6,14 @@ import { db } from './database';
 import typeDefs from './graphql/schema';
 import resolvers from './graphql/resolvers';
 import { middleware } from './config/middleware';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 
 const { PORT, NODE_ENV, DEV_ORIGIN, PROD_ORIGIN } = process.env;
 
 const app: express.Application = express();
 const port: string | number = PORT || 3000;
 const isDevelopment: boolean = NODE_ENV === 'development';
-const staticDir: string = isDevelopment ? './dist' : '.';
+// const staticDir: string = isDevelopment ? './dist' : '.';
 const origin: string = isDevelopment ? DEV_ORIGIN : PROD_ORIGIN;
 
 interface CorsOpts {
@@ -27,11 +28,12 @@ const cors: CorsOpts = {
 
 middleware(app);
 
-app.get('*', (_req: Request, res: Response): void => {
-  res.sendFile('index.html', {
-    root: path.join(__dirname, staticDir),
-  });
-});
+// app.get('*', (_req: Request, res: Response): void => {
+//   console.log(__dirname, staticDir)
+//   res.sendFile('index.html', {
+//     root: __dirname,
+//   });
+// });
 
 const server = new ApolloServer({
   typeDefs,
@@ -40,6 +42,9 @@ const server = new ApolloServer({
     req,
     res,
   }),
+  plugins: [
+    ApolloServerPluginLandingPageGraphQLPlayground(),
+  ],
 });
 
 const startServer = async (): Promise<void> => {
@@ -50,7 +55,7 @@ const startServer = async (): Promise<void> => {
     path: '/graphql',
   });
   app.listen(port, () => {
-    console.log(`Express server listeting on port ${port}`);
+    console.log(`Express server listening on port ${port}`);
   });
 };
 

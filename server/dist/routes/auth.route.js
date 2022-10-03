@@ -41,7 +41,6 @@ router.get('/', (req, res) => {
     res.send({ loginLink });
 });
 router.get('/auth/google/callback', (req, res, errorHandler) => {
-    console.log(req.query.code);
     if (req.query.error) {
         // The user did not give us permission.
         return errorHandler(req.query.error);

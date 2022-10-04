@@ -1,28 +1,21 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import Token from '../../../database/models/token';
 import User from '../../../database/models/user';
 import 'dotenv/config';
-import { stringify } from 'querystring';
-
-const TOKEN_KEY = process.env.TOKEN_KEY;
-
-const cookieOpts = {
-  path: '/',
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-};
+import { AuthenticationError } from 'apollo-server-core';
+import { tokenGenerator } from '../../../config/middleware/auth';
 
 export const createUser = async (
   _: any,
   args: any,
-  ctx: any
+  context: any
 ): Promise<object> => {
+
   const {
     input: { displayName, firstName, lastName, email, password },
   } = args;
 
-  const date = new Date();
+  const createdAt = new Date();
 
   const salt = bcrypt.genSaltSync(10);
 
@@ -30,7 +23,7 @@ export const createUser = async (
     displayName,
     firstName,
     lastName,
-    date,
+    createdAt,
     email,
     password: bcrypt.hashSync(password, salt),
   }).catch((error) => {
@@ -38,68 +31,67 @@ export const createUser = async (
     throw new Error(error);
   });
 
-  const token = jwt.sign(
-    { _id: user._id.toString(), email: user.email },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: '1d',
-    }
-  );
+  if (user) {
+    const token = tokenGenerator(user._id);
 
-  ctx.res.cookie(TOKEN_KEY, JSON.stringify(token), cookieOpts);
+    return {
+      user: user,
+      isAuthenticated: true,
+      token: token,
+    };
+  }
 
-  return user;
+  return {
+    user: null,
+    isAuthenticated: false,
+    token: null,
+  };
 };
 
 export const signInUser = async (
   _: any,
   args: any,
-  ctx: any
+  context: any
 ): Promise<object> => {
   const {
     input: { email, password },
   } = args;
 
-  try {
-    const user: any = await User.findOne({
-      email,
-    });
+  const user: any = await User.findOne({
+    email,
+  });
 
+  if (user) {
     const isValidPassword: boolean = bcrypt.compareSync(
       password,
       user.password
     );
-    if (isValidPassword) {
-      const token = jwt.sign(
-        { _id: user._id, email: user.email },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: '1d',
-        }
-      );
-      ctx.res.cookie(TOKEN_KEY, JSON.stringify(token), cookieOpts);
+
+    if (!isValidPassword) {
+      return new AuthenticationError('Invalid password');
     }
+
+    const token = jwt.sign(
+      { _id: user._id.toString() },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      }
+    );
+
     return {
+      user: user,
       isAuthenticated: isValidPassword,
+      token: token,
     };
-  } catch (error: any) {
-    throw new Error(error);
   }
+  return new AuthenticationError('Invalid email address');
 };
 
-export const signOutUser = async (
-  _: any,
-  _args: any,
-  ctx: any
-): Promise<object> => {
-  const token: string = ctx.req.cookies['x-access-token'];
-  if (token) {
-    const newToken = new Token();
-    newToken.tags.push(token);
-    newToken.save();
-  }
-  ctx.res.clearCookie(TOKEN_KEY);
+export const signOutUser = (_: any, _args: any, context: any): any => {
   return {
-    status: 200,
+    user: null,
+    isAuthenticated: false,
+    token: null,
   };
 };

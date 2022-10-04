@@ -13,42 +13,40 @@ const typeDefs = gql`
     email: String
     password: String
   }
-  type IsAuthenticated {
-    status: Int!
-  }
-  type SignIn {
+
+  type AuthenticationPayload {
     isAuthenticated: Boolean!
+    token: String
+    user: User
   }
-  type CreateAccountPayload {
-    _id: String!
-    token: String!
-    email: String!
-  }
-  input UserCredentials {
-    _id: String
-    displayName: String!
+
+  input UserDetails {
+    displayName: String
     firstName: String!
     lastName: String!
     image: String
     googleId: String
     createdAt: Date
+    email: String
+    password: String
+  }
+
+  input UserCredentials {
     email: String!
     password: String!
   }
   input GetUserByEmail {
     email: String!
   }
-  type SignOutUser {
-    status: Int!
-  }
+  
   type Query {
     getUserByEmail(input: GetUserByEmail): User
-    isAuthenticated: IsAuthenticated
+    # isAuthenticated: IsAuthenticated
   }
   type Mutation {
-    createUser(input: UserCredentials): User!
-    signInUser(input: UserCredentials): SignIn!
-    signOutUser: SignOutUser!
+    createUser(input: UserDetails): AuthenticationPayload!
+    signInUser(input: UserCredentials): AuthenticationPayload!
+    signOutUser: AuthenticationPayload!
   }
 `;
 

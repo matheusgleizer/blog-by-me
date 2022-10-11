@@ -38,7 +38,7 @@ const typeDefs = gql`
   input GetUserByEmail {
     email: String!
   }
-  
+
   type Query {
     getUserByEmail(input: GetUserByEmail): User
     # isAuthenticated: IsAuthenticated

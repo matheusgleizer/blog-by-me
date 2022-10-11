@@ -11,24 +11,16 @@ import {
 } from 'apollo-server-core';
 import { tokenGenerator, getUserByToken } from './config/middleware/auth';
 import 'dotenv/config';
+import cors from 'cors';
 
 const { PORT, NODE_ENV, DEV_ORIGIN, PROD_ORIGIN } = process.env;
 
 const app: express.Application = express();
+app.use(cors())
 const port: string | number = PORT || 3000;
 const isDevelopment: boolean = NODE_ENV === 'development';
 // const staticDir: string = isDevelopment ? './dist' : '.';
 const origin: string = isDevelopment ? DEV_ORIGIN : PROD_ORIGIN;
-
-interface CorsOpts {
-  origin: string;
-  credentials: boolean;
-}
-
-const cors: CorsOpts = {
-  origin,
-  credentials: true,
-};
 
 middleware(app);
 
@@ -39,7 +31,7 @@ app.get('', (_req: Request, res: Response): void => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  csrfPrevention: true,
+  csrfPrevention: false,
   cache: 'bounded',
   context: ({ req, res }) => {
     try {
@@ -52,7 +44,7 @@ const server = new ApolloServer({
       const user = getUserByToken(token);
 
       if (user) {
-        return { user: user, isAuthenticated: true, token: token };
+        return { user, isAuthenticated: true, token };
       }
     } catch (err) {
       return new AuthenticationError('User is not authenticated');
@@ -67,7 +59,6 @@ const startServer = async (): Promise<void> => {
     await server.start();
     server.applyMiddleware({
       app,
-      cors,
       path: '/graphql',
     });
     app.listen(port, () => {

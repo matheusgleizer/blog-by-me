@@ -35,9 +35,9 @@ export const createUser = async (
     const token = tokenGenerator(user._id);
 
     return {
-      user: user,
+      user,
       isAuthenticated: true,
-      token: token,
+      token,
     };
   }
 
@@ -53,6 +53,7 @@ export const signInUser = async (
   args: any,
   context: any
 ): Promise<object> => {
+  console.log('here')
   const {
     input: { email, password },
   } = args;
@@ -80,9 +81,9 @@ export const signInUser = async (
     );
 
     return {
-      user: user,
+      user,
       isAuthenticated: isValidPassword,
-      token: token,
+      token,
     };
   }
   return new AuthenticationError('Invalid email address');

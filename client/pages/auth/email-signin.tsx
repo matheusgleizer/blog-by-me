@@ -7,18 +7,19 @@ import { SIGN_IN_MUTATION } from '../../graphql/mutation/user';
 export default function CredentialsSignIn({ csrfToken }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signInUser, {data, loading, error}] = useMutation(SIGN_IN_MUTATION)
+  const [signInUser, { data, loading, error }] = useMutation(SIGN_IN_MUTATION);
 
   if (loading) return 'Submitting...';
-  if(error) console.log((JSON.stringify(error, null, 2)))
+  if (error) console.log(JSON.stringify(error, null, 2));
   if (error) return `Submission error! ${error.message}`;
-  if(data) console.log(data)
+  if (data) document.cookie = `auth-token=${data.signInUser.token}; path=/`;
+  console.log(data);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        signInUser({variables: {email: email, password: password}});
+        signInUser({ variables: { email: email, password: password } });
       }}
     >
       <input name='csrfToken' type='hidden' defaultValue={csrfToken} />

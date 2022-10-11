@@ -10,7 +10,6 @@ export const createUser = async (
   args: any,
   context: any
 ): Promise<object> => {
-
   const {
     input: { displayName, firstName, lastName, email, password },
   } = args;
@@ -51,9 +50,8 @@ export const createUser = async (
 export const signInUser = async (
   _: any,
   args: any,
-  context: any
+  ctx: any
 ): Promise<object> => {
-  console.log('here')
   const {
     input: { email, password },
   } = args;
